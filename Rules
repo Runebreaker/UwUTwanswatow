@@ -1,0 +1,8 @@
+Implemented Rules marked with X, partial with ~
+
+1. X Replace all 'l', 'L', 'r', 'R' with 'w', 'W' respectively
+2. ~ Special word conversions (adapted for capital and non-capital letters):
+  - X This -> Dis
+  - X The -> Te
+  - That -> Dat
+3. If not enough of the text was changed, an 'uwu' is appended (percentual barrier)
