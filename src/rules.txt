@@ -1,0 +1,6 @@
+[lr],w
+[LR],W
+This,Tis
+The,Te
+this,tis
+the,te

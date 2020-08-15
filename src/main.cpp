@@ -1,11 +1,34 @@
 #include <iostream>
+#include <fstream>
 #include <windows.h>
 #include <WinUser.h>
 #include <stdio.h>
 #include <string>
+#include <string.h>
 #include <algorithm>
+#include <math.h>
+#include <regex>
+#include <vector>
+
+struct Rule
+{
+    std::string regex;
+    std::string replace;
+
+    Rule(std::string a, std::string b)
+    {
+        regex = a;
+        replace = b;
+    }
+    Rule() : Rule("", "") {}
+};
 
 bool wunning = 1;
+const double UWU_PERCENT_BARRIER_MAX = 0.3;
+
+char *token;
+std::vector<Rule> ruleset;
+std::string rulePath = "../src/rules.txt";
 
 std::string h = " ";
 std::string last = " ";
@@ -52,50 +75,49 @@ void setText(std::string in)
     CloseClipboard();
 }*/
 
-std::string translate(std::string tInput)
+std::vector<Rule> fillArray(std::vector<Rule> array, std::string filePath, int arraySize)
 {
-    int *toBeRemoved = new int[tInput.size()];
+    std::ifstream file(filePath);
+    std::regex re("[ \t\n]+$"); //For removing trailing newlines and whitespaces
+
+    std::string temp;
+    for (int i = 0; i < arraySize; i++)
+    {
+        std::getline(file, temp);
+        std::regex_replace(temp, re, "");
+        int delimPos = temp.find(',');
+
+        if (delimPos >= 0)
+        {
+            std::string a = temp.substr(0, delimPos);
+            std::string b = temp.substr(delimPos + 1, temp.length() - delimPos);
+            array.push_back(Rule(a, b));
+        }
+    }
+    file.close();
+
+    return array;
+}
+
+std::string translate(std::string tInput, std::string filePath) //Mainly for rules implementation
+{
+    std::ifstream infile(filePath);
     int position = 0;
     int uwuCounter = 0;
-    for (int i = 0; i < tInput.size(); i++)
+    int arraySize = std::count(std::istreambuf_iterator<char>(infile), std::istreambuf_iterator<char>(), '\n') + 1;
+    infile.close();
+
+    ruleset = fillArray(ruleset, filePath, arraySize);
+    for(int i = 0; i < ruleset.size(); i++)
     {
-        if (tInput[i] == 'L' || tInput[i] == 'R') //Basics
-        {
-            tInput[i] = 'W';
-            uwuCounter++;
-        }
-        else if (tInput[i] == 'l' || tInput[i] == 'r') //Basics
-        {
-            tInput[i] = 'w';
-            uwuCounter++;
-        }
-        else if ((tInput[i] == 'T' || tInput[i] == 't')) //Replace the -> te, this -> tis
-        {
-            if ((i + 2) <= tInput.size() && (tInput[i + 1] == 'h' || tInput[i + 1] == 'H') && (tInput[i + 2] == 'e' || tInput[i + 2] == 'E'))
-            {
-                tInput[i + 1] = 'e';
-                tInput[i + 2] = ' ';
-                toBeRemoved[position] = (i + 2);
-                position++;
-            }
-            if ((i + 3) <= tInput.size() && (tInput[i + 1] == 'h' || tInput[i + 1] == 'H') && (tInput[i + 2] == 'i' || tInput[i + 2] == 'I') && (tInput[i + 3] == 's' || tInput[i + 3] == 'S'))
-            {
-                tInput[i] = 'D';
-                tInput[i + 1] = 'i';
-                tInput[i + 2] = 's';
-                tInput[i + 3] = ' ';
-                toBeRemoved[position] = (i + 3);
-                position++;
-            }
-        }
+        Rule currentRule = ruleset.at(i);
+        std::regex re(currentRule.regex);
+        tInput = std::regex_replace(tInput, re, currentRule.replace);
     }
 
-    for (int i = 0; i < position; i++)
-    {
-        tInput.erase(toBeRemoved[i], 1);
-    }
-
-    delete toBeRemoved;
+    // tangent hyperbolicus curve to determine the percentage of uwu appendage
+    if ((double)uwuCounter / (double)tInput.length() <= -UWU_PERCENT_BARRIER_MAX / 2 * tanh(tInput.length() / 5 - 6) + UWU_PERCENT_BARRIER_MAX / 2)
+        tInput.append(" uwu");
 
     return tInput;
 }
@@ -112,22 +134,22 @@ std::string translate(std::string tInput)
     }
 }*/
 
-std::string textBasedTranslation(std::string in)
-{
-    std::string out = "";
-    out = translate(in);
-    return out;
-}
-
 int main()
 {
     //run();
+
     std::string input;
-    std::cout << "What do you want to twanswate? UwU" << std::endl << std::endl << "\t";
+    std::cout << "What do you want to twanswate? UwU" << std::endl
+              << std::endl
+              << "\t";
     std::getline(std::cin, input);
-    std::cout << std::endl << "Twanswating... UwU" << std::endl << std::endl
-    << "\t" << textBasedTranslation(input) << std::endl << std::endl
-    << "Thank you fow using my twanswator OwO" << std::endl << std::endl;
+    std::cout << std::endl
+              << "Twanswating... UwU" << std::endl
+              << std::endl;
+    std::cout << "\t" << translate(input, rulePath) << std::endl
+              << std::endl
+              << "Thank you fow using my twanswator OwO" << std::endl
+              << std::endl;
     system("pause");
     return 0;
 }

@@ -4,5 +4,5 @@ Implemented Rules marked with X, partial with ~
 2. ~ Special word conversions (adapted for capital and non-capital letters):
   - X This -> Dis
   - X The -> Te
-  - That -> Dat
-3. If not enough of the text was changed, an 'uwu' is appended (percentual barrier)
+  - X That -> Dat
+3. X If not enough of the text was changed, an 'uwu' is appended (percentual barrier) [implemented as lower percentage for longer sentences]
